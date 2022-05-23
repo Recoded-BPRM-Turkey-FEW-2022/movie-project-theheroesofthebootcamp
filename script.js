@@ -4,10 +4,13 @@ const TMDB_BASE_URL = "https://api.themoviedb.org/3";
 const PROFILE_BASE_URL = "http://image.tmdb.org/t/p/w185";
 const BACKDROP_BASE_URL = "http://image.tmdb.org/t/p/w780";
 const CONTAINER = document.querySelector(".container");
+ 
 
 // Don't touch this function please
 //FIRST: Everything starts here This represents the homePage
 const autorun = async () => {
+  // this line important to clear the content when returend to homepage
+  CONTAINER.innerHTML=''
   const movies = await fetchMovies();
   renderMovies(movies.results);
 };
@@ -51,11 +54,12 @@ const renderMovies = (movies) => {
   
   movies.map((movie) => {
     const movieDiv = document.createElement("div");
+    movieDiv.classList.add('col-md-4','col-sm-6')
     movieDiv.innerHTML = `
-        <img src="${BACKDROP_BASE_URL + movie.backdrop_path}" alt="${
+        <img class="col-12" src="${BACKDROP_BASE_URL + movie.backdrop_path}" alt="${
       movie.title
     } poster">
-        <h3>${movie.title}</h3>`;
+        <h3 class="text-center">${movie.title}</h3> `;
     movieDiv.addEventListener("click", () => {
       movieDetails(movie);
     });
