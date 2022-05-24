@@ -4,7 +4,7 @@ const TMDB_BASE_URL = "https://api.themoviedb.org/3";
 const PROFILE_BASE_URL = "http://image.tmdb.org/t/p/w185";
 const BACKDROP_BASE_URL = "http://image.tmdb.org/t/p/w780";
 const CONTAINER = document.querySelector(".container");
- 
+const actorsBtn = document.querySelector("#actorsBtn");
 
 
 function searchApiForMovies(){
@@ -22,7 +22,7 @@ searchApiForMovies()
 const autorun = async () => {
   // this line important to clear the content when returend to homepage
 
-  const movies = await fetchLists();
+  const movies = await fetchLists(`movie/popular`, '');
   renderMovies(movies.results);
 };
 
@@ -53,7 +53,7 @@ const fetchLists = async (main, sub) => {
 // Don't touch this function please. This function is to fetch one movie.
 //This is the function to fetch the RAW details of the movie after you click on the movie.
 const fetchMovie = async (movieId) => {
-  const url = constructUrl(`movie/${movieId}`);
+  const url = constructUrl(`movie/${movieId}`,'');
   const res = await fetch(url);
   return res.json();
 };
@@ -104,5 +104,56 @@ const renderMovie = (movie) => {
             <ul id="actors" class="list-unstyled"></ul>
     </div>`;
 };
+
+
+actorsBtn.addEventListener("click", async () => {
+  const  actors = await fetchLists(`person/popular`, '');
+  renderActors(actors.results);
+})
+
+const fetchActor = async (actorId) => {
+  const url = constructUrl(`person/${actorId}`, '');
+  const res = await fetch(url);
+  return res.json();
+};
+
+const actorDetails = async (actor) => {
+  const actorRes = await fetchActor(actor.id);
+  renderActor(actorRes);
+  
+};
+const renderActors =  (actors) => {
+  actors.map(async (actor) => {
+    CONTAINER.innerHTML = ``
+    const movieDiv = document.createElement("div");
+     const img = await  fetchImage(actor.id)
+     movieDiv.classList.add('col-md-4','col-sm-6', "display-flex", "justify-content-center")  
+    movieDiv.innerHTML = `
+        <img style= 'width:200px'src="${img}" class=" mx-auto d-block" alt="${
+      actor.name
+    } poster">
+        <h3 class="text-center">${actor.name}</h3>`;
+    movieDiv.addEventListener("click", () => {
+      actorDetails(actor);
+    });
+    CONTAINER.appendChild(movieDiv);
+
+  });
+};
+
+const fetchImage = async (id) => {
+  const url = constructUrl(`person/${id}/images`, '');
+  const res = await fetch(url);
+  const data = await res.json();
+ let image = ''
+    try {
+       image = `${PROFILE_BASE_URL + data.profiles[0].file_path}`
+    } catch (error) {
+       image = `https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png`
+}
+finally {
+  return image
+}
+}
 
 document.addEventListener("DOMContentLoaded", autorun);
