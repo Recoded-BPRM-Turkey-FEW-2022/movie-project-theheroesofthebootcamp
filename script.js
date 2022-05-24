@@ -87,7 +87,7 @@ const renderMovie = (movie) => {
     <div class="row">
         <div class="col-md-4">
              <img id="movie-backdrop" src=${
-               BACKDROP_BASE_URL + movie.backdrop_path
+              PROFILE_BASE_URL + movie.poster_path
              }>
         </div>
         <div class="col-md-8">
@@ -155,5 +155,66 @@ finally {
   return image
 }
 }
+
+const renderActor = async (actor) => {
+  CONTAINER.innerHTML = ""
+  const fixedDeathDay = ()=> {return actor.deathday ? actor.deathday : "Still Alive"}
+
+
+   CONTAINER.innerHTML =`
+    <div class="row">
+        <div class="col-md-4">
+             <img id="movie-backdrop" src=${
+              PROFILE_BASE_URL + actor.profile_path 
+             }>
+        </div>
+        <div class="col-md-8">
+            <h2 id="actor-name">${actor.name}</h2>
+            <p id="actor-ageInfo"><b>Born:</b> ${
+              actor.birthday
+            } in <b>${
+              actor.place_of_birth
+            }</b></br><b>Death Day:</b> ${fixedDeathDay()}</p>
+            <p id="actor-pop"><b>Popularity:</b> ${actor.popularity}</p>
+            <h3>Biography:</h3>
+            <p id="movie-overview">${actor.biography}</p>
+        </div>
+        </div></br>
+            <h3>Participated in:</h3></br>
+            <ul id="moviesOfActor" class="list-unstyled"></ul>
+    </div>`;
+
+    const actorMovies = await  involvedMovies(actor.id)
+    let movieCount = 0
+    while (movieCount < 4) {
+     renderInvolvedMovies(actorMovies[movieCount])
+    movieCount++
+    }
+};
+const involvedMovies = async (actorId) => {
+  const url = constructUrl(`person/${actorId}/movie_credits`, '');
+  const res = await fetch(url);
+  const data = await res.json();
+  return data.cast;
+}
+
+const renderInvolvedMovies =  (movieslist) => {
+ 
+    const movieDiv = document.createElement("li");
+    let image = ''
+      image = `${PROFILE_BASE_URL + movieslist.poster_path}`
+      if (image.includes("null")) {image = `https://www.blueskysales.com/scs/extensions/SC/Manor/3.1.0/img/no_image_available.jpeg?resizeid=5&resizeh=1200&resizew=1200`}
+    movieDiv.className = "actorMovieElement"
+    movieDiv.innerHTML = `
+        <img style= "width:200px" src="${image}" alt="${
+          movieslist.title
+    } poster">
+        <h3>${movieslist.title}</h3>`;
+    movieDiv.addEventListener("click", () => {
+      movieDetails(movieslist);
+    });
+    moviesOfActor.appendChild(movieDiv);
+  
+};
 
 document.addEventListener("DOMContentLoaded", autorun);
