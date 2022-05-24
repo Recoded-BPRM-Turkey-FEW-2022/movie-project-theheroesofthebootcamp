@@ -4,10 +4,24 @@ const TMDB_BASE_URL = "https://api.themoviedb.org/3";
 const PROFILE_BASE_URL = "http://image.tmdb.org/t/p/w185";
 const BACKDROP_BASE_URL = "http://image.tmdb.org/t/p/w780";
 const CONTAINER = document.querySelector(".container");
+ 
 
+
+function searchApiForMovies(){
+  let input = document.querySelector('.search-input')
+  let myinput= input.value
+  let search=document.querySelector('.search-api')
+  search.addEventListener('click',()=>{
+    console.log(myinput)
+  })
+
+}
+searchApiForMovies()
 // Don't touch this function please
 //FIRST: Everything starts here This represents the homePage
 const autorun = async () => {
+  // this line important to clear the content when returend to homepage
+
   const movies = await fetchLists();
   renderMovies(movies.results);
 };
@@ -48,14 +62,15 @@ const fetchMovie = async (movieId) => {
 //This shows the list of movies after being fectched from the API
 //It also connects the click event to the movieDetails function
 const renderMovies = (movies) => {
-  
+  CONTAINER.innerHTML=''
   movies.map((movie) => {
     const movieDiv = document.createElement("div");
+    movieDiv.classList.add('col-md-4','col-sm-6')
     movieDiv.innerHTML = `
-        <img src="${BACKDROP_BASE_URL + movie.backdrop_path}" alt="${
+        <img class="col-12" src="${BACKDROP_BASE_URL + movie.backdrop_path}" alt="${
       movie.title
     } poster">
-        <h3>${movie.title}</h3>`;
+        <h3 class="text-center">${movie.title}</h3> `;
     movieDiv.addEventListener("click", () => {
       movieDetails(movie);
     });
