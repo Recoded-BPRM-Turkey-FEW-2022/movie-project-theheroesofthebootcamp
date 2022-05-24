@@ -5,6 +5,8 @@ const PROFILE_BASE_URL = "http://image.tmdb.org/t/p/w185";
 const BACKDROP_BASE_URL = "http://image.tmdb.org/t/p/w780";
 const CONTAINER = document.querySelector(".container");
 const actorsBtn = document.querySelector("#actorsBtn");
+const genresList = document.querySelector(".dropdown-menu");
+const genresButton = document.querySelector("#navbarDropdown");
 
 
 function searchApiForMovies(){
@@ -20,10 +22,12 @@ searchApiForMovies()
 // Don't touch this function please
 //FIRST: Everything starts here This represents the homePage
 const autorun = async () => {
-  // this line important to clear the content when returend to homepage
+
 
   const movies = await fetchLists(`movie/popular`, '');
   renderMovies(movies.results);
+  const genres = await fetchLists(`genre/movie/list`, '');
+  renderGenres(genres);
 };
 
 // Don't touch this function please
@@ -214,7 +218,21 @@ const renderInvolvedMovies =  (movieslist) => {
       movieDetails(movieslist);
     });
     moviesOfActor.appendChild(movieDiv);
-  
+
 };
+
+const renderGenres = (genres) => {
+  genres.genres.map((genre) => {
+    genresList.innerHTML +=`<li ><a class="dropdown-item genres" href="#" id=${genre.id}>${genre.name}</a></li>` })
+  const genreButtons = document.querySelectorAll(".genres");
+  genreButtons.forEach((button) => {
+    button.addEventListener("click", async () => {
+
+      const genreId = button.id;
+      const sortedMovies = await fetchLists(`discover/movie`, `&with_genres=${genreId}`);
+      renderMovies(sortedMovies.results);
+      })
+   }) ;
+  }
 
 document.addEventListener("DOMContentLoaded", autorun);
