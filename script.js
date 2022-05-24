@@ -6,6 +6,17 @@ const BACKDROP_BASE_URL = "http://image.tmdb.org/t/p/w780";
 const CONTAINER = document.querySelector(".container");
  
 
+
+function searchApiForMovies(){
+  let input = document.querySelector('.search-input')
+  let myinput= input.value
+  let search=document.querySelector('.search-api')
+  search.addEventListener('click',()=>{
+    console.log(myinput)
+  })
+
+}
+searchApiForMovies()
 // Don't touch this function please
 //FIRST: Everything starts here This represents the homePage
 const autorun = async () => {
