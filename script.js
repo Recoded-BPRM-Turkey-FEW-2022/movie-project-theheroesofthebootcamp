@@ -19,8 +19,8 @@ function searchApiForMovies(){
 
 }
 searchApiForMovies()
-// Don't touch this function please
-//FIRST: Everything starts here This represents the homePage
+
+// This is the main function to start the website.
 const autorun = async () => {
 
 
@@ -30,31 +30,30 @@ const autorun = async () => {
   renderGenres(genres);
 };
 
-// Don't touch this function please
+
 //This one to handle the API key and integrate it with the path so we can access the API
+//It was improved to make it more dynamic
 const constructUrl = (path, sortType) => {
   return `${TMDB_BASE_URL}/${path}?api_key=${atob(
     "NTQyMDAzOTE4NzY5ZGY1MDA4M2ExM2M0MTViYmM2MDI="
   )}${sortType}`;
 };
 
-// You may need to add to this function, definitely don't delete it.
-// THIRD:   As far as I understood...This function is used to fetch the ID of the movie to be used lately to fetch the details of the movie.
+//This function just to bring the details of the movie fetched by fetchMovie and handle them to renderMovie to be displayed on the page.
 const movieDetails = async (movie) => {
   const movieRes = await fetchMovie(movie.id);
   renderMovie(movieRes);
   
 };
 
-// This function is to fetch the list of the movies. You may need to add it or change some part in it in order to apply some of the features.
-//SECOND the Data is being fetched from the API
+// This function to bring a list of objects using the API, it could be a list of movies or a list of actors..etc.
 const fetchLists = async (main, sub) => {
   const url = constructUrl(main, sub)
   const res = await fetch(url);
   return res.json();
 };
 
-// Don't touch this function please. This function is to fetch one movie.
+
 //This is the function to fetch the RAW details of the movie after you click on the movie.
 const fetchMovie = async (movieId) => {
   const url = constructUrl(`movie/${movieId}`,'');
@@ -62,7 +61,7 @@ const fetchMovie = async (movieId) => {
   return res.json();
 };
 
-// You'll need to play with this function in order to add features and enhance the style.
+
 //This shows the list of movies after being fectched from the API
 //It also connects the click event to the movieDetails function
 const renderMovies = (movies) => {
@@ -76,6 +75,7 @@ const renderMovies = (movies) => {
     } poster">
         <h3 class="text-center">${movie.title}</h3> `;
     movieDiv.addEventListener("click", () => {
+      // This one will bring the ID of the movies and pass it to the renderMovie function.
       movieDetails(movie);
     });
     CONTAINER.appendChild(movieDiv);
@@ -83,8 +83,8 @@ const renderMovies = (movies) => {
   });
 };
 
-// You'll need to play with this function in order to add features and enhance the style.
-//This starts when you enter the movie page  to show the conent of the page
+
+//This starts when you enter the movie page  to show the conent of the movie that you press on
 const renderMovie = (movie) => {
 
   CONTAINER.innerHTML = `
@@ -109,23 +109,27 @@ const renderMovie = (movie) => {
     </div>`;
 };
 
-
+//Bring the Popular Actors when you click on the actors button.
 actorsBtn.addEventListener("click", async () => {
   const  actors = await fetchLists(`person/popular`, '');
   renderActors(actors.results);
 })
 
+// Bring RAW details of the actor after you click on the actor. 
 const fetchActor = async (actorId) => {
   const url = constructUrl(`person/${actorId}`, '');
   const res = await fetch(url);
   return res.json();
 };
 
+//This function passes the actor ID to the fetchActor function to bring the RAW details of the actor and handle them to renderActor to be displayed on the page.
 const actorDetails = async (actor) => {
   const actorRes = await fetchActor(actor.id);
   renderActor(actorRes);
   
 };
+
+// Show the list of actors after being fectched from the API
 const renderActors =  (actors) => {
   actors.map(async (actor) => {
     CONTAINER.innerHTML = ``
@@ -145,6 +149,7 @@ const renderActors =  (actors) => {
   });
 };
 
+//Bring the image of the actor to use it in the renderActor function
 const fetchImage = async (id) => {
   const url = constructUrl(`person/${id}/images`, '');
   const res = await fetch(url);
@@ -159,7 +164,7 @@ finally {
   return image
 }
 }
-
+//This shows the details of the actor that you click on.
 const renderActor = async (actor) => {
   CONTAINER.innerHTML = ""
   const fixedDeathDay = ()=> {return actor.deathday ? actor.deathday : "Still Alive"}
@@ -195,13 +200,14 @@ const renderActor = async (actor) => {
     movieCount++
     }
 };
+//Bring the related movies
 const involvedMovies = async (actorId) => {
   const url = constructUrl(`person/${actorId}/movie_credits`, '');
   const res = await fetch(url);
   const data = await res.json();
   return data.cast;
 }
-
+//Shows the related movies of the actor.
 const renderInvolvedMovies =  (movieslist) => {
  
     const movieDiv = document.createElement("li");
@@ -221,6 +227,7 @@ const renderInvolvedMovies =  (movieslist) => {
 
 };
 
+//Create a list of genres and give it a functionality to bring the movies of the genre that you click on.
 const renderGenres = (genres) => {
   genres.genres.map((genre) => {
     genresList.innerHTML +=`<li ><a class="dropdown-item genres" href="#" id=${genre.id}>${genre.name}</a></li>` })
