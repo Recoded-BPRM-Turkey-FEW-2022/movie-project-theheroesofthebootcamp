@@ -5,18 +5,16 @@ const PROFILE_BASE_URL = "http://image.tmdb.org/t/p/w185";
 const BACKDROP_BASE_URL = "http://image.tmdb.org/t/p/w780";
 const CONTAINER = document.querySelector(".container");
  
+const searchInput= document.querySelector("[data-search]")
+searchInput.addEventListener("input",(e)=>{
+  const value = e.target.value
+  fetchLists(/search/multi, `&query=${value}`)
+  console.log(value)
+})
+ 
 
+ 
 
-function searchApiForMovies(){
-  let input = document.querySelector('.search-input')
-  let myinput= input.value
-  let search=document.querySelector('.search-api')
-  search.addEventListener('click',()=>{
-    console.log(myinput)
-  })
-
-}
-searchApiForMovies()
 // Don't touch this function please
 //FIRST: Everything starts here This represents the homePage
 const autorun = async () => {
