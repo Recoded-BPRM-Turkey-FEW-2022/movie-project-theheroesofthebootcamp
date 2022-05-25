@@ -32,7 +32,7 @@ function searchApiForMovies(){
 const searchInput= document.querySelector("[data-search]")
 searchInput.addEventListener("input",(e)=>{
   const value = e.target.value
-  fetchLists(/search/multi, `&query=${value}`)
+  fetchLists(`search/multi`, `&query=${value}`)
   console.log(value)
 })
  
