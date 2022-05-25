@@ -13,7 +13,7 @@ const filterBy = [
   {text: "Up Coming", url: `movie/upcoming`},
   {text: "Top Rated", url: `movie/top_rated`},
   {text: "Now Playing", url: `movie/now_playing`},
-  {text: "Release Date", url: [`discover/movie`, `&primary_release_date.lte=${year}`]},
+  {text: "Release Date", url: `discover/movie`},
 ]
 
 function searchApiForMovies(){
@@ -259,16 +259,16 @@ const renderGenres = (genres) => {
     }
 
     const filterButtons = filterList.children
-    
+
     for (let i = 0; i < filterButtons.length; i++) {
       if (filterBy[i].text === "Release Date") {
         filterButtons[i].addEventListener("click", async () => {
-          const fetchFilters = await fetchLists(filterBy[i].url[0], filterBy[i].url[1]);
+          const fetchFilters = await fetchLists(filterBy[i].url , `&primary_release_date.lte=${year}`);
           renderMovies(fetchFilters.results);
         })
       }
       filterButtons[i].addEventListener("click", async () => {
-        const fetchFilters = await fetchLists(filterBy[i].url, '');
+        const fetchFilters = await fetchLists(filterBy[i].url , '');
         renderMovies(fetchFilters.results);
       })
 
