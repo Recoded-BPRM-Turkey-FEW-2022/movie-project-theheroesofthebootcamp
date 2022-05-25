@@ -16,6 +16,7 @@ const filterBy = [
   {text: "Release Date", url: `discover/movie`},
 ]
 
+//will be deleted
 function searchApiForMovies(){
   let input = document.querySelector('.search-input')
   let myinput= input.value
@@ -26,7 +27,21 @@ function searchApiForMovies(){
 
 }
 // searchApiForMovies()
+ 
+//mohamed new code
+const searchInput= document.querySelector("[data-search]")
+searchInput.addEventListener("input",(e)=>{
+  const value = e.target.value
+  fetchLists(/search/multi, `&query=${value}`)
+  console.log(value)
+})
+ 
 
+ 
+
+
+// Don't touch this function please
+//FIRST: Everything starts here This represents the homePage
 // This is the main function to start the website.
 const autorun = async () => {
   const movies = await fetchLists(filterBy[2].url,``);
