@@ -5,9 +5,16 @@ const PROFILE_BASE_URL = "http://image.tmdb.org/t/p/w185";
 const BACKDROP_BASE_URL = "http://image.tmdb.org/t/p/w780";
 const CONTAINER = document.querySelector(".container");
 const actorsBtn = document.querySelector("#actorsBtn");
-const genresList = document.querySelector(".dropdown-menu");
-const genresButton = document.querySelector("#navbarDropdown");
-
+const genresList = document.querySelector(".genre-list");
+const filterList = document.querySelector("#filter-list");
+const year = new Date().getFullYear() 
+const filterBy = [
+  {text: "Popular", url: `movie/popular`},
+  {text: "Up Coming", url: `movie/upcoming`},
+  {text: "Top Rated", url: `movie/top_rated`},
+  {text: "Now Playing", url: `movie/now_playing`},
+  {text: "Release Date", url: `discover/movie`},
+]
 
 function searchApiForMovies(){
   let input = document.querySelector('.search-input')
@@ -18,16 +25,13 @@ function searchApiForMovies(){
   })
 
 }
-searchApiForMovies()
+// searchApiForMovies()
 
 // This is the main function to start the website.
 const autorun = async () => {
-
-
-  const movies = await fetchLists(`movie/popular`, '');
+  const movies = await fetchLists(filterBy[2].url,``);
   renderMovies(movies.results);
-  const genres = await fetchLists(`genre/movie/list`, '');
-  renderGenres(genres);
+ 
 };
 
 
@@ -36,7 +40,7 @@ const autorun = async () => {
 const constructUrl = (path, sortType) => {
   return `${TMDB_BASE_URL}/${path}?api_key=${atob(
     "NTQyMDAzOTE4NzY5ZGY1MDA4M2ExM2M0MTViYmM2MDI="
-  )}${sortType}`;
+  )}&language=en-US${sortType}`;
 };
 
 //This function just to bring the details of the movie fetched by fetchMovie and handle them to renderMovie to be displayed on the page.
@@ -242,4 +246,36 @@ const renderGenres = (genres) => {
    }) ;
   }
 
-document.addEventListener("DOMContentLoaded", autorun);
+
+  const createGenresList= async () => {
+    const genres = await fetchLists(`genre/movie/list`, '');
+    renderGenres(genres);}
+
+
+
+  const createFilterList =  () => {
+    for (let i = 0; i < filterBy.length; i++) {
+      filterList.innerHTML+= `<li ><a class="dropdown-item" href="#" id="${filterBy[i].text}">${filterBy[i].text}</a></li>`
+    }
+
+    const filterButtons = filterList.children
+
+    for (let i = 0; i < filterButtons.length; i++) {
+      if (filterBy[i].text === "Release Date") {
+        filterButtons[i].addEventListener("click", async () => {
+          const fetchFilters = await fetchLists(filterBy[i].url , `&primary_release_date.lte=${year}`);
+          renderMovies(fetchFilters.results);
+        })
+      }
+      filterButtons[i].addEventListener("click", async () => {
+        const fetchFilters = await fetchLists(filterBy[i].url , '');
+        renderMovies(fetchFilters.results);
+      })
+
+    }
+    }
+
+document.addEventListener("DOMContentLoaded", autorun );
+
+createGenresList()
+createFilterList()
