@@ -29,7 +29,7 @@ function searchApiForMovies(){
 
 // This is the main function to start the website.
 const autorun = async () => {
-  const movies = await fetchLists(filterBy[2].url,``);
+  const movies = await fetchLists(`movie/now_playing`,``);
   renderMovies(movies.results);
  
 };
@@ -70,14 +70,19 @@ const fetchMovie = async (movieId) => {
 //It also connects the click event to the movieDetails function
 const renderMovies = (movies) => {
   CONTAINER.innerHTML=''
+  
   movies.map((movie) => {
     const movieDiv = document.createElement("div");
-    movieDiv.classList.add('col-md-4','col-sm-6')
+    let image = `${BACKDROP_BASE_URL + movie.backdrop_path}`
+    movieDiv.classList.add('col-md-4','col-sm-6');
+    if (image.includes("null")) {image = `https://www.blueskysales.com/scs/extensions/SC/Manor/3.1.0/img/no_image_available.jpeg?resizeid=5&resizeh=1200&resizew=1200`}
     movieDiv.innerHTML = `
-        <img class="col-12" src="${BACKDROP_BASE_URL + movie.backdrop_path}" alt="${
+        <img class="col-12" src="${image}" alt="${
       movie.title
     } poster">
-        <h3 class="text-center">${movie.title}</h3> `;
+    
+        <h3 class="text-center">${movie.title}</h3>
+         `;
     movieDiv.addEventListener("click", () => {
       // This one will bring the ID of the movies and pass it to the renderMovie function.
       movieDetails(movie);
@@ -90,12 +95,13 @@ const renderMovies = (movies) => {
 
 //This starts when you enter the movie page  to show the conent of the movie that you press on
 const renderMovie = (movie) => {
-
+let image = `${PROFILE_BASE_URL + movie.poster_path}`
+if (image.includes("null"))  {image = 'https://www.blueskysales.com/scs/extensions/SC/Manor/3.1.0/img/no_image_available.jpeg?resizeid=5&resizeh=1200&resizew=1200'}
   CONTAINER.innerHTML = `
     <div class="row">
         <div class="col-md-4">
              <img id="movie-backdrop" src=${
-              PROFILE_BASE_URL + movie.poster_path
+             image
              }>
         </div>
         <div class="col-md-8">
@@ -211,6 +217,7 @@ const involvedMovies = async (actorId) => {
   const data = await res.json();
   return data.cast;
 }
+
 //Shows the related movies of the actor.
 const renderInvolvedMovies =  (movieslist) => {
  
