@@ -109,7 +109,7 @@ const renderMovies = (movies) => {
 
 
 //This starts when you enter the movie page  to show the conent of the movie that you press on
-const renderMovie = (movie) => {
+const renderMovie = async (movie) => {
 let image = `${PROFILE_BASE_URL + movie.poster_path}`
 if (image.includes("null"))  {image = 'https://www.blueskysales.com/scs/extensions/SC/Manor/3.1.0/img/no_image_available.jpeg?resizeid=5&resizeh=1200&resizew=1200'}
   CONTAINER.innerHTML = `
@@ -130,8 +130,10 @@ if (image.includes("null"))  {image = 'https://www.blueskysales.com/scs/extensio
         </div>
         </div>
             <h3>Actors:</h3>
-            <ul id="actors" class="list-unstyled"></ul>
+            <ul id="listOfActors" class="list-unstyled"></ul>
     </div>`;
+    const listOfActors = document.getElementById("listOfActors");
+   await renderCast(movie.id, listOfActors)
 };
 
 //Bring the Popular Actors when you click on the actors button.
@@ -293,9 +295,32 @@ const renderGenres = (genres) => {
         const fetchFilters = await fetchLists(filterBy[i].url , '');
         renderMovies(fetchFilters.results);
       })
+    }
+    }
 
+  const renderCast = async (movieID, targetDiv) => {
+    const fetchlist = await fetchLists(`movie/${movieID}/credits`, '');
+    const cast = fetchlist.cast;
+    for (let i = 0; i<5; i++){
+      const movieDiv = document.createElement("li");
+      const img = await  fetchImage(cast[i].id)
+      movieDiv.classList.add("display-flex", "justify-content-center")  
+     movieDiv.innerHTML = `
+         <img style= 'width:200px'src="${img}" class=" mx-auto d-block" alt="${
+          cast[i].name
+     } poster">
+         <h3 class="text-center">${cast[i].name}</h3>`;
+     movieDiv.addEventListener("click", () => {
+       actorDetails(cast[i]);
+     });
+     targetDiv.appendChild(movieDiv);
+ 
+   };
     }
-    }
+
+
+  
+
 
 document.addEventListener("DOMContentLoaded", autorun );
 
