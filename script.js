@@ -19,17 +19,17 @@ searchInput.addEventListener("input",(e)=>{
 //FIRST: Everything starts here This represents the homePage
 const autorun = async () => {
   // this line important to clear the content when returend to homepage
-  CONTAINER.innerHTML=''
-  const movies = await fetchMovies();
+
+  const movies = await fetchLists();
   renderMovies(movies.results);
 };
 
 // Don't touch this function please
 //This one to handle the API key and integrate it with the path so we can access the API
-const constructUrl = (path) => {
+const constructUrl = (path, sortType) => {
   return `${TMDB_BASE_URL}/${path}?api_key=${atob(
     "NTQyMDAzOTE4NzY5ZGY1MDA4M2ExM2M0MTViYmM2MDI="
-  )}`;
+  )}${sortType}`;
 };
 
 // You may need to add to this function, definitely don't delete it.
@@ -42,8 +42,8 @@ const movieDetails = async (movie) => {
 
 // This function is to fetch the list of the movies. You may need to add it or change some part in it in order to apply some of the features.
 //SECOND the Data is being fetched from the API
-const fetchMovies = async () => {
-  const url = constructUrl(`movie/now_playing`);
+const fetchLists = async (main, sub) => {
+  const url = constructUrl(main, sub)
   const res = await fetch(url);
   return res.json();
 };
@@ -60,7 +60,7 @@ const fetchMovie = async (movieId) => {
 //This shows the list of movies after being fectched from the API
 //It also connects the click event to the movieDetails function
 const renderMovies = (movies) => {
-  
+  CONTAINER.innerHTML=''
   movies.map((movie) => {
     const movieDiv = document.createElement("div");
     movieDiv.classList.add('col-md-4','col-sm-6')
