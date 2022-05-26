@@ -56,7 +56,7 @@ const autorun = async () => {
 const constructUrl = (path, sortType) => {
   return `${TMDB_BASE_URL}/${path}?api_key=${atob(
     "NTQyMDAzOTE4NzY5ZGY1MDA4M2ExM2M0MTViYmM2MDI="
-  )}&language=en-US${sortType}`;
+  )}${sortType}`;
 };
 
 //This function just to bring the details of the movie fetched by fetchMovie and handle them to renderMovie to be displayed on the page.
@@ -109,6 +109,8 @@ const renderMovies = (movies) => {
 
 //This starts when you enter the movie page  to show the conent of the movie that you press on
 const renderMovie = async (movie) => {
+  const trailersList = await fetchLists(`movie/${movie.id}/videos`, '');
+  const theTrailer = await buildTrailerUrl(trailersList.results);
   CONTAINER.innerHTML = `
     <div class="row">
         <div class="col-md-4">
@@ -129,7 +131,11 @@ const renderMovie = async (movie) => {
             <h3>Actors:</h3>
             <ul id="listOfActors" class="list-unstyled d-flex p-5px m-5px"></ul>
             <h3>Production Companies:</h3>
-            <ul id="Companies" class="list-unstyled d-flex p-5px m-5px"></ul>
+            <ul id="Companies" class="list-unstyled d-flex align-items-center p-5px m-5px"></ul>
+            <h3>Related Video</h3>
+            <iframe width="440" height="315"
+src="${theTrailer}">
+</iframe>
     </div>`;
     const listOfComps = document.querySelector("#Companies");
     const listOfActors = document.getElementById("listOfActors");
@@ -176,22 +182,6 @@ const renderActors =  (actors) => {
 
   });
 };
-
-//Bring the image of the actor to use it in the renderActor function
-// const fetchImage = async (id) => {
-//   const url = constructUrl(`person/${id}/images`, '');
-//   const res = await fetch(url);
-//   const data = await res.json();
-//  let image = ''
-//     try {
-//        image = `${PROFILE_BASE_URL + data.profiles[0].file_path}`
-//     } catch (error) {
-//        image = `https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png`
-// }
-// finally {
-//   return image
-// }
-// }
 
 const handleNull = (data) => {
   return !data? 'No Data' : data
@@ -371,8 +361,24 @@ const renderProductionCompanies = (arrOfComp, compsSection) => {
     </div>`;
   }
 
+const fetchTrailers = async (movieId) => {
+  const url = constructUrl(`movie/${movieId}/videos`, '');
+  const res = await fetch(url);
+  const data = await res.json()
+  return data.results
+}
+const buildTrailerUrl = (trailers) => {
+  let trailerUrl = ``
+  if (trailers.length > 0) {
+   trailerUrl =  `https://www.youtube.com/embed/${trailers[0].key}`
+  }
+  else {
+    trailerUrl = null
+  }
+  
+  return trailerUrl
+}
 
 document.addEventListener("DOMContentLoaded", autorun );
-
 createGenresList()
 createFilterList()
