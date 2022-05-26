@@ -16,34 +16,38 @@ const filterBy = [
   {text: "Release Date", url: `discover/movie`},
 ]
 
-//will be deleted
-function searchApiForMovies(){
-  let input = document.querySelector('.search-input')
-  let myinput= input.value
-  let search=document.querySelector('.search-api')
-  search.addEventListener('click',()=>{
-    console.log(myinput)
-  })
-
+function refreshPage() {
+  window.location.reload();
 }
-// searchApiForMovies()
  
-//mohamed new code
+//this function will take the input from user and search for the result
+const  getResFromInput= async() =>{
 const searchInput= document.querySelector("[data-search]")
-searchInput.addEventListener("input",(e)=>{
+searchInput.addEventListener("input",async (e)=>{
   const value = e.target.value
-  fetchLists(/search/multi, `&query=${value}`)
-  console.log(value)
+
+const fetchedRes= await   fetchLists(`search/multi`, `&query=${value}`)
+
+ renderMovies(fetchedRes.results);
 })
  
+}
+getResFromInput()
 
- 
+const aboutPage = ()=>{
+  CONTAINER.innerHTML = ""
+  const aboutUS= document.querySelector('.about-us-container')
+  aboutUS.className = 'show-div'
+  
+  
+}
 
 
 // Don't touch this function please
 //FIRST: Everything starts here This represents the homePage
 // This is the main function to start the website.
 const autorun = async () => {
+  
   const movies = await fetchLists(filterBy[2].url,``);
   renderMovies(movies.results);
  
@@ -75,7 +79,7 @@ const fetchLists = async (main, sub) => {
 
 //This is the function to fetch the RAW details of the movie after you click on the movie.
 const fetchMovie = async (movieId) => {
-  const url = constructUrl(`movie/${movieId}`,'');
+  const url = constructUrl(`movie/${movieId}`,'')
   const res = await fetch(url);
   return res.json();
 };
@@ -86,13 +90,15 @@ const fetchMovie = async (movieId) => {
 const renderMovies = (movies) => {
   CONTAINER.innerHTML=''
   movies.map((movie) => {
+  
     const movieDiv = document.createElement("div");
-    movieDiv.classList.add('col-md-4','col-sm-6')
+    movieDiv.classList.add('col-md-3','col-sm-5','movie-card')
     movieDiv.innerHTML = `
         <img class="col-12" src="${BACKDROP_BASE_URL + movie.backdrop_path}" alt="${
       movie.title
     } poster">
-        <h3 class="text-center">${movie.title}</h3> `;
+        <h3 class="text-center">${movie.title}</h3>
+        <p> </p> `;
     movieDiv.addEventListener("click", () => {
       // This one will bring the ID of the movies and pass it to the renderMovie function.
       movieDetails(movie);
@@ -124,7 +130,7 @@ const renderMovie = (movie) => {
         </div>
         </div>
             <h3>Actors:</h3>
-            <ul id="actors" class="list-unstyled"></ul>
+            <ul id="actors" class="list-unstyled d-flex"></ul>
     </div>`;
 };
 
@@ -136,6 +142,7 @@ actorsBtn.addEventListener("click", async () => {
 
 // Bring RAW details of the actor after you click on the actor. 
 const fetchActor = async (actorId) => {
+   
   const url = constructUrl(`person/${actorId}`, '');
   const res = await fetch(url);
   return res.json();
@@ -150,11 +157,12 @@ const actorDetails = async (actor) => {
 
 // Show the list of actors after being fectched from the API
 const renderActors =  (actors) => {
+  refreshPage()
   actors.map(async (actor) => {
     CONTAINER.innerHTML = ``
     const movieDiv = document.createElement("div");
      const img = await  fetchImage(actor.id)
-     movieDiv.classList.add('col-md-4','col-sm-6', "display-flex", "justify-content-center")  
+     movieDiv.classList.add('col-md-3','col-sm-6', 'movie-card')  
     movieDiv.innerHTML = `
         <img style= 'width:200px'src="${img}" class=" mx-auto d-block" alt="${
       actor.name
@@ -185,6 +193,7 @@ finally {
 }
 //This shows the details of the actor that you click on.
 const renderActor = async (actor) => {
+ 
   CONTAINER.innerHTML = ""
   const fixedDeathDay = ()=> {return actor.deathday ? actor.deathday : "Still Alive"}
 
@@ -207,9 +216,12 @@ const renderActor = async (actor) => {
             <h3>Biography:</h3>
             <p id="movie-overview">${actor.biography}</p>
         </div>
-        </div></br>
-            <h3>Participated in:</h3></br>
-            <ul id="moviesOfActor" class="list-unstyled"></ul>
+        </div>
+            <h3>Participated in:</h3>
+            <div class='container'>
+            <ul id="moviesOfActor" class="list-unstyled d-flex flex-wrap"></ul>
+            </div>
+          
     </div>`;
 
     const actorMovies = await  involvedMovies(actor.id)
@@ -230,10 +242,11 @@ const involvedMovies = async (actorId) => {
 const renderInvolvedMovies =  (movieslist) => {
  
     const movieDiv = document.createElement("li");
+    
     let image = ''
       image = `${PROFILE_BASE_URL + movieslist.poster_path}`
       if (image.includes("null")) {image = `https://www.blueskysales.com/scs/extensions/SC/Manor/3.1.0/img/no_image_available.jpeg?resizeid=5&resizeh=1200&resizew=1200`}
-    movieDiv.className = "actorMovieElement"
+    movieDiv.className = "actorMovieElement col-md-3 col-sm-5 movie-card"
     movieDiv.innerHTML = `
         <img style= "width:200px" src="${image}" alt="${
           movieslist.title
@@ -248,6 +261,7 @@ const renderInvolvedMovies =  (movieslist) => {
 
 //Create a list of genres and give it a functionality to bring the movies of the genre that you click on.
 const renderGenres = (genres) => {
+  
   genres.genres.map((genre) => {
     genresList.innerHTML +=`<li ><a class="dropdown-item genres" href="#" id=${genre.id}>${genre.name}</a></li>` })
   const genreButtons = document.querySelectorAll(".genres");
@@ -257,6 +271,7 @@ const renderGenres = (genres) => {
       const genreId = button.id;
       const sortedMovies = await fetchLists(`discover/movie`, `&with_genres=${genreId}`);
       renderMovies(sortedMovies.results);
+      refreshPage()
       })
    }) ;
   }
