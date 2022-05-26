@@ -2,6 +2,7 @@
 
 const TMDB_BASE_URL = "https://api.themoviedb.org/3";
 const PROFILE_BASE_URL = "http://image.tmdb.org/t/p/w185";
+const COMP_BASE_URL = "https://image.tmdb.org/t/p/original";
 const BACKDROP_BASE_URL = "http://image.tmdb.org/t/p/w780";
 const CONTAINER = document.querySelector(".container");
 const actorsBtn = document.querySelector("#actorsBtn");
@@ -88,11 +89,9 @@ const renderMovies = (movies) => {
   
   movies.map((movie) => {
     const movieDiv = document.createElement("div");
-    let image = `${BACKDROP_BASE_URL + movie.backdrop_path}`
     movieDiv.classList.add('col-md-4','col-sm-6');
-    if (image.includes("null")) {image = `https://www.blueskysales.com/scs/extensions/SC/Manor/3.1.0/img/no_image_available.jpeg?resizeid=5&resizeh=1200&resizew=1200`}
     movieDiv.innerHTML = `
-        <img class="col-12" src="${image}" alt="${
+        <img class="col-12" src="${nullImg(BACKDROP_BASE_URL + movie.backdrop_path)}" alt="${
       movie.title
     } poster">
     
@@ -110,32 +109,34 @@ const renderMovies = (movies) => {
 
 //This starts when you enter the movie page  to show the conent of the movie that you press on
 const renderMovie = async (movie) => {
-let image = `${PROFILE_BASE_URL + movie.poster_path}`
-if (image.includes("null"))  {image = 'https://www.blueskysales.com/scs/extensions/SC/Manor/3.1.0/img/no_image_available.jpeg?resizeid=5&resizeh=1200&resizew=1200'}
   CONTAINER.innerHTML = `
     <div class="row">
         <div class="col-md-4">
              <img id="movie-backdrop" src=${
-             image
+              nullImg(PROFILE_BASE_URL + movie.poster_path)
              }>
         </div>
         <div class="col-md-8">
             <h2 id="movie-title">${movie.title}</h2>
             <p id="movie-release-date"><b>Release Date:</b> ${
-              movie.release_date
+              handleNull(movie.release_date)
             }</p>
-            <p id="movie-runtime"><b>Runtime:</b> ${movie.runtime} Minutes</p>
+            <p id="movie-runtime"><b>Runtime:</b> ${handleNull(movie.runtime)} Minutes</p>
             <h3>Overview:</h3>
-            <p id="movie-overview">${movie.overview}</p>
+            <p id="movie-overview">${handleNull(movie.overview)}</p>
         </div>
         </div>
             <h3>Actors:</h3>
-            <ul id="listOfActors" class="list-unstyled"></ul>
+            <ul id="listOfActors" class="list-unstyled d-flex p-5px m-5px"></ul>
+            <h3>Production Companies:</h3>
+            <ul id="Companies" class="list-unstyled d-flex p-5px m-5px"></ul>
     </div>`;
+    const listOfComps = document.querySelector("#Companies");
     const listOfActors = document.getElementById("listOfActors");
    await renderCast(movie.id, listOfActors)
+   renderProductionCompanies(movie.
+    production_companies, listOfComps)
 };
-
 //Bring the Popular Actors when you click on the actors button.
 actorsBtn.addEventListener("click", async () => {
   const  actors = await fetchLists(`person/popular`, '');
@@ -158,13 +159,13 @@ const actorDetails = async (actor) => {
 
 // Show the list of actors after being fectched from the API
 const renderActors =  (actors) => {
+  CONTAINER.innerHTML = ``
   actors.map(async (actor) => {
-    CONTAINER.innerHTML = ``
     const movieDiv = document.createElement("div");
-     const img = await  fetchImage(actor.id)
+    //  const img = await  fetchImage(actor.id)
      movieDiv.classList.add('col-md-4','col-sm-6', "display-flex", "justify-content-center")  
     movieDiv.innerHTML = `
-        <img style= 'width:200px'src="${img}" class=" mx-auto d-block" alt="${
+        <img style= 'width:200px'src="${nullImg(PROFILE_BASE_URL+ actor.profile_path)}" class=" mx-auto d-block" alt="${
       actor.name
     } poster">
         <h3 class="text-center">${actor.name}</h3>`;
@@ -177,18 +178,29 @@ const renderActors =  (actors) => {
 };
 
 //Bring the image of the actor to use it in the renderActor function
-const fetchImage = async (id) => {
-  const url = constructUrl(`person/${id}/images`, '');
-  const res = await fetch(url);
-  const data = await res.json();
- let image = ''
-    try {
-       image = `${PROFILE_BASE_URL + data.profiles[0].file_path}`
-    } catch (error) {
-       image = `https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png`
+// const fetchImage = async (id) => {
+//   const url = constructUrl(`person/${id}/images`, '');
+//   const res = await fetch(url);
+//   const data = await res.json();
+//  let image = ''
+//     try {
+//        image = `${PROFILE_BASE_URL + data.profiles[0].file_path}`
+//     } catch (error) {
+//        image = `https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png`
+// }
+// finally {
+//   return image
+// }
+// }
+
+const handleNull = (data) => {
+  return !data? 'No Data' : data
 }
-finally {
-  return image
+const nullImg = (imgPath) => {
+  if (imgPath.includes("null")) {
+    return 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png'
+  } else {
+    return imgPath
 }
 }
 //This shows the details of the actor that you click on.
@@ -201,19 +213,19 @@ const renderActor = async (actor) => {
     <div class="row">
         <div class="col-md-4">
              <img id="movie-backdrop" src=${
-              PROFILE_BASE_URL + actor.profile_path 
+              nullImg(PROFILE_BASE_URL + actor.profile_path) 
              }>
         </div>
         <div class="col-md-8">
             <h2 id="actor-name">${actor.name}</h2>
             <p id="actor-ageInfo"><b>Born:</b> ${
-              actor.birthday
+              handleNull(actor.birthday)
             } in <b>${
-              actor.place_of_birth
+              handleNull(actor.place_of_birth)
             }</b></br><b>Death Day:</b> ${fixedDeathDay()}</p>
-            <p id="actor-pop"><b>Popularity:</b> ${actor.popularity}</p>
+            <p id="actor-pop"><b>Popularity:</b> ${handleNull(actor.popularity)}</p>
             <h3>Biography:</h3>
-            <p id="movie-overview">${actor.biography}</p>
+            <p id="movie-overview">${handleNull(actor.biography)}</p>
         </div>
         </div></br>
             <h3>Participated in:</h3></br>
@@ -239,12 +251,10 @@ const involvedMovies = async (actorId) => {
 const renderInvolvedMovies =  (movieslist) => {
  
     const movieDiv = document.createElement("li");
-    let image = ''
-      image = `${PROFILE_BASE_URL + movieslist.poster_path}`
-      if (image.includes("null")) {image = `https://www.blueskysales.com/scs/extensions/SC/Manor/3.1.0/img/no_image_available.jpeg?resizeid=5&resizeh=1200&resizew=1200`}
+
     movieDiv.className = "actorMovieElement"
     movieDiv.innerHTML = `
-        <img style= "width:200px" src="${image}" alt="${
+        <img style= "width:200px" src="${nullImg(PROFILE_BASE_URL + movieslist.poster_path)}" alt="${
           movieslist.title
     } poster">
         <h3>${movieslist.title}</h3>`;
@@ -303,10 +313,9 @@ const renderGenres = (genres) => {
     const cast = fetchlist.cast;
     for (let i = 0; i<5; i++){
       const movieDiv = document.createElement("li");
-      const img = await  fetchImage(cast[i].id)
       movieDiv.classList.add("display-flex", "justify-content-center")  
      movieDiv.innerHTML = `
-         <img style= 'width:200px'src="${img}" class=" mx-auto d-block" alt="${
+         <img style= 'width:200px'src="${nullImg(PROFILE_BASE_URL+ cast[i].profile_path)}" class=" mx-auto d-block" alt="${
           cast[i].name
      } poster">
          <h3 class="text-center">${cast[i].name}</h3>`;
@@ -318,8 +327,49 @@ const renderGenres = (genres) => {
    };
     }
 
+const renderProductionCompanies = (arrOfComp, compsSection) => {
+  arrOfComp.map((comp) => {
+    const compDiv = document.createElement("li");
 
-  
+    compDiv.classList.add('d-flex-column', 'justify-content-center', 'align-items-center');
+    compDiv.innerHTML = `
+        <img style="width:200px"src="${nullImg(COMP_BASE_URL + comp.logo_path)}" alt="${
+      comp.name
+    } poster">
+    
+        <h3 class="text-center">${comp.name}</h3>
+         `;
+        compDiv.addEventListener("click", () => {
+          renderComp(comp.id);
+        });
+    
+        compsSection.appendChild(compDiv);
+  })
+}
+  const renderComp = async (compId) => {
+    const compDetails = await fetchLists(`company/${compId}`, '');
+    CONTAINER.innerHTML = ``
+    CONTAINER.innerHTML =`
+    <div class= "row" >
+        <div class="col-md-4">
+             <img id="comp-pic" style="width:300px" src=${
+              nullImg(COMP_BASE_URL + compDetails.logo_path) 
+             }>
+        </div>
+        <div class="col-md-8">
+            <h2 id="comp-name" >${compDetails.name}</h2>
+            <q id="comp-Info" > <b>Headquarters:</b> ${
+              handleNull(compDetails.headquarters)
+            }<b></br>Website: ${handleNull(compDetails.homepage)
+            
+            }</b></br><b>Origin Country:</b> ${compDetails.origin_country}</br>
+            <b>Home Page:</b> ${handleNull(compDetails.homepage)}</p>
+            <h3>Description:</h3>
+            <p id="comp-description">${handleNull(compDetails.description)}</p>
+        </div>
+        </div>
+    </div>`;
+  }
 
 
 document.addEventListener("DOMContentLoaded", autorun );
