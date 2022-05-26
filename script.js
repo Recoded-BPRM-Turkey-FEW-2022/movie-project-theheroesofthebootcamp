@@ -17,24 +17,18 @@ const filterBy = [
   {text: "Release Date", url: `discover/movie`},
 ]
 
-//will be deleted
-function searchApiForMovies(){
-  let input = document.querySelector('.search-input')
-  let myinput= input.value
-  let search=document.querySelector('.search-api')
-  search.addEventListener('click',()=>{
-    console.log(myinput)
-  })
 
-}
-// searchApiForMovies()
  
 //mohamed new code
 const searchInput= document.querySelector("[data-search]")
-searchInput.addEventListener("input",(e)=>{
+searchInput.addEventListener("keyup",async (e)=>{
   const value = e.target.value
-  fetchLists(`search/multi`, `&query=${value}`)
-  console.log(value)
+  if (!value) autorun()
+  CONTAINER.innerHTML = ``
+  const list = await fetchLists(`search/multi`, `&query=${value}`)
+    for (const result of list.results) {
+      result.media_type === 'movie' ? renderMovies([result], false) : result.media_type === 'movie'? renderActors([result], false) : null
+    }
 })
  
 
@@ -46,7 +40,7 @@ searchInput.addEventListener("input",(e)=>{
 // This is the main function to start the website.
 const autorun = async () => {
   const movies = await fetchLists(`movie/now_playing`,``);
-  renderMovies(movies.results);
+  renderMovies(movies.results, true);
  
 };
 
@@ -56,7 +50,7 @@ const autorun = async () => {
 const constructUrl = (path, sortType) => {
   return `${TMDB_BASE_URL}/${path}?api_key=${atob(
     "NTQyMDAzOTE4NzY5ZGY1MDA4M2ExM2M0MTViYmM2MDI="
-  )}${sortType}`;
+  )}&include_adult=false${sortType}`;
 };
 
 //This function just to bring the details of the movie fetched by fetchMovie and handle them to renderMovie to be displayed on the page.
@@ -84,8 +78,8 @@ const fetchMovie = async (movieId) => {
 
 //This shows the list of movies after being fectched from the API
 //It also connects the click event to the movieDetails function
-const renderMovies = (movies) => {
-  CONTAINER.innerHTML=''
+const renderMovies = (movies, deleteContent) => {
+  if (deleteContent) CONTAINER.innerHTML=''
   
   movies.map((movie) => {
     const movieDiv = document.createElement("div");
@@ -146,7 +140,7 @@ src="${theTrailer}">
 //Bring the Popular Actors when you click on the actors button.
 actorsBtn.addEventListener("click", async () => {
   const  actors = await fetchLists(`person/popular`, '');
-  renderActors(actors.results);
+  renderActors(actors.results, true);
 })
 
 // Bring RAW details of the actor after you click on the actor. 
@@ -164,8 +158,8 @@ const actorDetails = async (actor) => {
 };
 
 // Show the list of actors after being fectched from the API
-const renderActors =  (actors) => {
-  CONTAINER.innerHTML = ``
+const renderActors =  (actors, deleteContent) => {
+  if (deleteContent) CONTAINER.innerHTML = ``
   actors.map(async (actor) => {
     const movieDiv = document.createElement("div");
     //  const img = await  fetchImage(actor.id)
@@ -265,7 +259,7 @@ const renderGenres = (genres) => {
 
       const genreId = button.id;
       const sortedMovies = await fetchLists(`discover/movie`, `&with_genres=${genreId}`);
-      renderMovies(sortedMovies.results);
+      renderMovies(sortedMovies.results, true);
       })
    }) ;
   }
@@ -288,12 +282,12 @@ const renderGenres = (genres) => {
       if (filterBy[i].text === "Release Date") {
         filterButtons[i].addEventListener("click", async () => {
           const fetchFilters = await fetchLists(filterBy[i].url , `&primary_release_date.lte=${year}`);
-          renderMovies(fetchFilters.results);
+          renderMovies(fetchFilters.results, true);
         })
       }
       filterButtons[i].addEventListener("click", async () => {
         const fetchFilters = await fetchLists(filterBy[i].url , '');
-        renderMovies(fetchFilters.results);
+        renderMovies(fetchFilters.results, true);
       })
     }
     }
