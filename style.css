@@ -169,6 +169,7 @@ body{
 }
 /* cards used for actors and movies elements */
 .movie-card{
+  font-family: sans-serif;
   color: black;
  text-align: center;
     border-radius: 3%;
@@ -229,9 +230,25 @@ body{
 
 
 
+.blue_flag {
+    font-size: 18px;
+    letter-spacing: 1.5px;
+    position: relative;
+    left: -1.8%;
+    padding: 8px 28px;
+    padding-left: 3rem;
+    color: #fff;
+    background: #833ab4;
+    background: linear-gradient(90deg,#833ab4 0,#ac1919 50%,#fcb045 100%);
+    clip-path: polygon(0 0,100% 0,90% 100%,0 100%);
+}
 
+.rating{
+  border-radius: 5px;
+  background: rgba(11, 86, 226, 0.2);
 
-
+  
+}
 
 
 footer{

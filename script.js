@@ -16,7 +16,8 @@ const filterBy = [
   {text: "Now Playing", url: `movie/now_playing`},
   {text: "Release Date", url: `discover/movie`},
 ]
-
+let genresId = [];
+let genresTitle = [];
 
  
 
@@ -88,23 +89,32 @@ const fetchMovie = async (movieId) => {
 //It also connects the click event to the movieDetails function
 const renderMovies = (movies, deleteContent) => {
   if (deleteContent) CONTAINER.innerHTML=''
-  
+    let movieGenres = []
   movies.map((movie) => {
-  
+    for(let i =0; i < movie.genre_ids.length; i++){
+      if (genresId.indexOf(movie.genre_ids[i]) !== -1){
+        movieGenres.push(genresTitle[genresId.indexOf(movie.genre_ids[i])])
+      }
+    }
+    
     const movieDiv = document.createElement("div");
     movieDiv.classList.add('col-md-3','col-sm-5','movie-card')
-    movieDiv.innerHTML = `
+    movieDiv.innerHTML = ` 
         <img class="col-12" src="${nullImg(BACKDROP_BASE_URL + movie.backdrop_path)}" alt="${
       movie.title
     } poster">
-        <h3 class="text-center">${movie.title}</h3>
-        <p> </p> `;
+    <div class=''><h6 class='blue_flag'>${movieGenres[0]}${'\xa0'.repeat(50)} </h6>
+    
+        <h3 >${movie.title}</h3>
+        <h5  class='rating'>Rating: ${movie.vote_average}</h5>
+         </div> `;
     movieDiv.addEventListener("click", () => {
       // This one will bring the ID of the movies and pass it to the renderMovie function.
       movieDetails(movie);
     });
     CONTAINER.appendChild(movieDiv);
-
+    console.log(movieGenres.join('/'))
+    movieGenres = []
   });
 };
 
@@ -121,29 +131,50 @@ const renderMovie = async (movie) => {
              }>
         </div>
         <div class="col-md-8">
-            <h2 id="movie-title">${movie.title}</h2>
+            <h2 id="movie-title">${movie.title}&nbsp&nbsp&nbsp${movie.vote_average}</h2>
+            <p id="director"></p>
+            <p><b>Language:</b> ${movie.original_language.toUpperCase()}</p>
             <p id="movie-release-date"><b>Release Date:</b> ${
               handleNull(movie.release_date)
             }</p>
             <p id="movie-runtime"><b>Runtime:</b> ${handleNull(movie.runtime)} Minutes</p>
+            <p ><b>Votes:</b> ${handleNull(movie.vote_count)}</p>
             <h3>Overview:</h3>
             <p id="movie-overview">${handleNull(movie.overview)}</p>
         </div>
         </div>
+        <div >
             <h3>Actors:</h3>
             <ul id="listOfActors" class="list-unstyled d-flex"></ul>
+
             <h3>Production Companies:</h3>
-            <ul id="Companies" class="list-unstyled d-flex align-items-center p-5px m-5px"></ul>
+            <ul id="Companies" class="list-unstyled d-flex  p-5px m-5px"></ul>
+            <h3>Related Movies:</h3>
+            <ul id="relatedMovies" class="list-unstyled d-flex align-items-center p-5px m-5px"></ul>
+            </div>
+            <div>
             <h3>Related Video</h3>
             <iframe width="440" height="315"
+            
 src="${theTrailer}">
 </iframe>
-    </div>`;
+</div>
+    </div>
+    `;
     const listOfComps = document.querySelector("#Companies");
     const listOfActors = document.getElementById("listOfActors");
+    let relatedMovies = document.getElementById("relatedMovies");
    await renderCast(movie.id, listOfActors)
    renderProductionCompanies(movie.
     production_companies, listOfComps)
+    const fetchRelated = await involvedMovies("movie", movie.id, "recommendations")
+    let relatedList = []
+    for (const result of fetchRelated.results) {
+      relatedList.push(result)}
+
+      for (let i=0; i<5; i++){
+     renderInvolvedMovies(relatedList[i], relatedMovies)
+      }
 };
 //Bring the Popular Actors when you click on the actors button.
 actorsBtn.addEventListener("click", async () => {
@@ -221,46 +252,44 @@ const renderActor = async (actor) => {
             <p id="movie-overview">${handleNull(actor.biography)}</p>
         </div>
         </div>
+        <div>
             <h3>Participated in:</h3>
             <div class='container'>
             <ul id="moviesOfActor" class="list-unstyled d-flex flex-wrap"></ul>
-            </div>
+            </div></div>
           
     </div>`;
 
-    const actorMovies = await  involvedMovies(actor.id)
+    const actorMovies = await  involvedMovies(`person`,actor.id, `movie_credits`)
     let movieCount = 0
     while (movieCount < 4) {
-     renderInvolvedMovies(actorMovies[movieCount])
+     renderInvolvedMovies(actorMovies.cast[movieCount], moviesOfActor)
     movieCount++
     }
 };
 //Bring the related movies
-const involvedMovies = async (actorId) => {
-  const url = constructUrl(`person/${actorId}/movie_credits`, '');
+const involvedMovies = async (type,ID , path ) => {
+  const url = constructUrl(`${type}/${ID}/${path}`, '');
   const res = await fetch(url);
   const data = await res.json();
-  return data.cast;
+  return data;
 }
 
 //Shows the related movies of the actor.
-const renderInvolvedMovies =  (movieslist) => {
+const renderInvolvedMovies =  (movieslist, targetDiv) => {
  
     const movieDiv = document.createElement("li");
-    
-    let image = ''
-      image = `${PROFILE_BASE_URL + movieslist.poster_path}`
-      if (image.includes("null")) {image = `https://www.blueskysales.com/scs/extensions/SC/Manor/3.1.0/img/no_image_available.jpeg?resizeid=5&resizeh=1200&resizew=1200`}
-    movieDiv.className = "actorMovieElement col-md-3 col-sm-5 movie-card"
+
+    movieDiv.className = "MovieElement movie-card";
     movieDiv.innerHTML = `
-        <img style= "width:200px" src="${nullImg(PROFILE_BASE_URL + movieslist.poster_path)}" alt="${
-          movieslist.title
-    } poster">
+    <img style= "width:200px" src="${nullImg(PROFILE_BASE_URL + movieslist.poster_path)}" alt="${
+      movieslist.title
+} poster">
         <h3>${movieslist.title}</h3>`;
     movieDiv.addEventListener("click", () => {
       movieDetails(movieslist);
     });
-    moviesOfActor.appendChild(movieDiv);
+    targetDiv.appendChild(movieDiv);
 
 };
 
@@ -268,7 +297,9 @@ const renderInvolvedMovies =  (movieslist) => {
 const renderGenres = (genres) => {
   
   genres.genres.map((genre) => {
-    genresList.innerHTML +=`<li ><a class="dropdown-item genres" href="#" id=${genre.id}>${genre.name}</a></li>` })
+    genresList.innerHTML +=`<li ><a class="dropdown-item genres" href="#" id=${genre.id}>${genre.name}</a></li>`
+     genresId.push(genre.id);
+     genresTitle.push(genre.name);
   const genreButtons = document.querySelectorAll(".genres");
   genreButtons.forEach((button) => {
     button.addEventListener("click", async () => {
@@ -277,9 +308,11 @@ const renderGenres = (genres) => {
       const sortedMovies = await fetchLists(`discover/movie`, `&with_genres=${genreId}`);
       renderMovies(sortedMovies.results, true);
       })
-   }) ;
-  }
-
+   })
+   
+  })
+  console.log(genresId)
+}
 
   const createGenresList= async () => {
     const genres = await fetchLists(`genre/movie/list`, '');
@@ -310,10 +343,19 @@ const renderGenres = (genres) => {
 
   const renderCast = async (movieID, targetDiv) => {
     const fetchlist = await fetchLists(`movie/${movieID}/credits`, '');
+
+    // Added the director name quickly becasue it is from the requirements.
+    const directorP = document.querySelector("#director");
+    for (let element of fetchlist.crew){
+      if (element.job === "Director") {
+        directorP.innerHTML = `<b>Director:</b> ${element.name}`
+      }
+    }
+    //The normal cast list
     const cast = fetchlist.cast;
     for (let i = 0; i<5; i++){
       const movieDiv = document.createElement("li");
-      movieDiv.classList.add("display-flex", "justify-content-center")  
+      movieDiv.classList.add("display-flex", "movie-card",'movie-card')  
      movieDiv.innerHTML = `
          <img style= 'width:200px'src="${nullImg(PROFILE_BASE_URL+ cast[i].profile_path)}" class=" mx-auto d-block" alt="${
           cast[i].name
@@ -331,7 +373,7 @@ const renderProductionCompanies = (arrOfComp, compsSection) => {
   arrOfComp.map((comp) => {
     const compDiv = document.createElement("li");
 
-    compDiv.classList.add('d-flex-column', 'justify-content-center', 'align-items-center');
+    compDiv.classList.add('d-flex-column', 'justify-content-center', 'movie-card');
     compDiv.innerHTML = `
         <img style="width:200px"src="${nullImg(COMP_BASE_URL + comp.logo_path)}" alt="${
       comp.name
@@ -350,7 +392,7 @@ const renderProductionCompanies = (arrOfComp, compsSection) => {
     const compDetails = await fetchLists(`company/${compId}`, '');
     CONTAINER.innerHTML = ``
     CONTAINER.innerHTML =`
-    <div class= "row" >
+    <div class= "row movie-card" >
         <div class="col-md-4">
              <img id="comp-pic" style="width:300px" src=${
               nullImg(COMP_BASE_URL + compDetails.logo_path) 
