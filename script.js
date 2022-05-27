@@ -16,9 +16,7 @@ const filterBy = [
   {text: "Release Date", url: `discover/movie`},
 ]
 
-function refreshPage() {
-  window.location.reload();
-}
+
  
 //this function will take the input from user and search for the result
 const  getResFromInput= async() =>{
@@ -34,13 +32,6 @@ const fetchedRes= await   fetchLists(`search/multi`, `&query=${value}`)
 }
 getResFromInput()
 
-const aboutPage = ()=>{
-  CONTAINER.innerHTML = ""
-  const aboutUS= document.querySelector('.about-us-container')
-  aboutUS.className = 'show-div'
-  
-  
-}
 
 
 // Don't touch this function please
@@ -157,14 +148,15 @@ const actorDetails = async (actor) => {
 
 // Show the list of actors after being fectched from the API
 const renderActors =  (actors) => {
-  refreshPage()
+ 
+  
   actors.map(async (actor) => {
     CONTAINER.innerHTML = ``
     const movieDiv = document.createElement("div");
      const img = await  fetchImage(actor.id)
      movieDiv.classList.add('col-md-3','col-sm-6', 'movie-card')  
     movieDiv.innerHTML = `
-        <img style= 'width:200px'src="${img}" class=" mx-auto d-block" alt="${
+        <img style= 'width:90%'src="${img}" class=" mx-auto d-block" alt="${
       actor.name
     } poster">
         <h3 class="text-center">${actor.name}</h3>`;
@@ -271,7 +263,7 @@ const renderGenres = (genres) => {
       const genreId = button.id;
       const sortedMovies = await fetchLists(`discover/movie`, `&with_genres=${genreId}`);
       renderMovies(sortedMovies.results);
-      refreshPage()
+     
       })
    }) ;
   }
