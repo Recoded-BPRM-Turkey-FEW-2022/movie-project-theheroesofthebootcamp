@@ -18,20 +18,28 @@ const filterBy = [
 
 
  
-//this function will take the input from user and search for the result
-const  getResFromInput= async() =>{
+
 const searchInput= document.querySelector("[data-search]")
-searchInput.addEventListener("input",async (e)=>{
+searchInput.addEventListener("keyup",async (e)=>{
   const value = e.target.value
-
-const fetchedRes= await   fetchLists(`search/multi`, `&query=${value}`)
-
- renderMovies(fetchedRes.results);
+  if (!value) autorun()
+  CONTAINER.innerHTML = ``
+  const list = await fetchLists(`search/multi`, `&query=${value}`)
+    for (const result of list.results) {
+      result.media_type === 'movie' ? renderMovies([result], false) : result.media_type === 'movie'? renderActors([result], false) : null
+    }
 })
- 
-}
-getResFromInput()
 
+
+function aboutPage(){
+  CONTAINER.innerHTML=''
+  CONTAINER.innerHTML=` <div class='container custom-container' > 
+  <h2> About OMG Movies</h2> 
+  <div> OMG movie is a search engine for movies. The website uses TMDB database as a source for the data
+   and was implemented by two Re:Coded's students, Amjad Maqsouma & Mohamed Hadri.
+  Further information about the students can be found down below in the footer Section.</div> 
+  <div/> `
+}
 
 
 // Don't touch this function please
@@ -79,7 +87,8 @@ const fetchMovie = async (movieId) => {
 //This shows the list of movies after being fectched from the API
 //It also connects the click event to the movieDetails function
 const renderMovies = (movies) => {
-  CONTAINER.innerHTML=''
+  if (deleteContent) CONTAINER.innerHTML=''
+
   movies.map((movie) => {
   
     const movieDiv = document.createElement("div");
@@ -104,7 +113,7 @@ const renderMovies = (movies) => {
 const renderMovie = (movie) => {
 
   CONTAINER.innerHTML = `
-    <div class="row">
+    <div class="row custom-container">
         <div class="col-md-4">
              <img id="movie-backdrop" src=${
               PROFILE_BASE_URL + movie.poster_path
@@ -123,6 +132,7 @@ const renderMovie = (movie) => {
             <h3>Actors:</h3>
             <ul id="actors" class="list-unstyled d-flex"></ul>
     </div>`;
+
 };
 
 //Bring the Popular Actors when you click on the actors button.
@@ -177,7 +187,7 @@ const fetchImage = async (id) => {
     try {
        image = `${PROFILE_BASE_URL + data.profiles[0].file_path}`
     } catch (error) {
-       image = `https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png`
+       image = `https://www.blueskysales.com/scs/extensions/SC/Manor/3.1.0/img/no_image_available.jpeg?resizeid=5&resizeh=1200&resizew=1200`
 }
 finally {
   return image
@@ -191,7 +201,7 @@ const renderActor = async (actor) => {
 
 
    CONTAINER.innerHTML =`
-    <div class="row">
+    <div class="row custom-container">
         <div class="col-md-4">
              <img id="movie-backdrop" src=${
               PROFILE_BASE_URL + actor.profile_path 
@@ -206,7 +216,7 @@ const renderActor = async (actor) => {
             }</b></br><b>Death Day:</b> ${fixedDeathDay()}</p>
             <p id="actor-pop"><b>Popularity:</b> ${actor.popularity}</p>
             <h3>Biography:</h3>
-            <p id="movie-overview">${actor.biography}</p>
+            <summary id="movie-overview">${actor.biography}</summary>
         </div>
         </div>
             <h3>Participated in:</h3>

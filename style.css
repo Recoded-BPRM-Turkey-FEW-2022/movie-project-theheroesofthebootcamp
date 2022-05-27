@@ -1,5 +1,7 @@
+/* navbar start */
 @import url('https://fonts.googleapis.com/css2?family=Allerta+Stencil&display=swap');
 
+/* navbar start */
 .custom-search{
   border-radius: 10%;
   height: 40px;
@@ -12,7 +14,10 @@
   width: 90px;
 }
 
-
+footer{
+  margin: 0;
+  padding: 0;
+}
 
  .search-box{
   width: fit-content;
@@ -68,21 +73,6 @@
   border-bottom:1px solid rgba(255,255,255,.5);
   transition: all 500ms cubic-bezier(0, 0.110, 0.35, 2);
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 .navbar-nav>li>a{
 
@@ -152,7 +142,7 @@
 
   z-index: 10;
 }
-
+/* navbar ends */
 
 body{
     color: rgb(255, 255, 255);
@@ -161,25 +151,23 @@ body{
    background-repeat: no-repeat;
   background-attachment: fixed;
     
-   background-image: url('/img/bg6.jpg');
+   background-image: url('/img/bg5.jpg');
 }
 
 
-.custom-nav{
-
-}
 #movie-backdrop {
     width: 100%;
 }
 
 .container {
     padding-top: 32px;
+    min-height: 100vh !important;
 }
 
 #actors {
     margin: 24px 16px 0 0;
 }
-
+/* cards used for actors and movies elements */
 .movie-card{
   color: black;
  text-align: center;
@@ -206,14 +194,46 @@ body{
     cursor: pointer;
 }
 
-
-.about-content{
-    background-color: #5c54db;;
-    height: 200px;
-    width: 40%;
-    padding:10px ;
-    border-radius: 5%;
+.custom-container{
+  font-size: 1.3rem ;
+  font-family: sans-serif;
+  border-radius: 4px;
+  box-shadow:0 2px 10px rgba(0,0,0,.2);
+  opacity: 0.9;
+  padding: 10px;
+  background-image: linear-gradient(
+    40deg,
+    #b2eeed 0%,
+    #e28ee4 45%,
+    #cfce6f 100%
+  );
+  
 }
+
+.custom-container img{
+  border-radius: 4px;
+}
+
+
+#about-container{
+  font-size: 1.4rem;
+  opacity: 0.9;
+  border-radius: 4px;
+ height: 600px;
+  background-color: #22a6b3  ;
+}
+#about-container div{
+  padding: 20px;
+  margin-top: 30px;
+}
+
+
+
+
+
+
+
+
 footer{
     height: 60px;
     background-color:rgb(3, 10, 10);
