@@ -164,7 +164,7 @@ body{
     min-height: 100vh !important;
 }
 
-#actors {
+#listOfActors {
     margin: 24px 16px 0 0;
 }
 /* cards used for actors and movies elements */
