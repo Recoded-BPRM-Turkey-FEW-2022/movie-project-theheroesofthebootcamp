@@ -113,11 +113,14 @@ const renderMovie = async (movie) => {
              }>
         </div>
         <div class="col-md-8">
-            <h2 id="movie-title">${movie.title}</h2>
+            <h2 id="movie-title">${movie.title}&nbsp&nbsp&nbsp${movie.vote_average}</h2>
+            <p id="director"></p>
+            <p><b>Language:</b> ${movie.original_language.toUpperCase()}</p>
             <p id="movie-release-date"><b>Release Date:</b> ${
               handleNull(movie.release_date)
             }</p>
             <p id="movie-runtime"><b>Runtime:</b> ${handleNull(movie.runtime)} Minutes</p>
+            <p ><b>Votes:</b> ${handleNull(movie.vote_count)}</p>
             <h3>Overview:</h3>
             <p id="movie-overview">${handleNull(movie.overview)}</p>
         </div>
@@ -126,6 +129,8 @@ const renderMovie = async (movie) => {
             <ul id="listOfActors" class="list-unstyled d-flex p-5px m-5px"></ul>
             <h3>Production Companies:</h3>
             <ul id="Companies" class="list-unstyled d-flex align-items-center p-5px m-5px"></ul>
+            <h3>Related Movies:</h3>
+            <ul id="relatedMovies" class="list-unstyled d-flex align-items-center p-5px m-5px"></ul>
             <h3>Related Video</h3>
             <iframe width="440" height="315"
 src="${theTrailer}">
@@ -133,9 +138,18 @@ src="${theTrailer}">
     </div>`;
     const listOfComps = document.querySelector("#Companies");
     const listOfActors = document.getElementById("listOfActors");
+    let relatedMovies = document.getElementById("relatedMovies");
    await renderCast(movie.id, listOfActors)
    renderProductionCompanies(movie.
     production_companies, listOfComps)
+    const fetchRelated = await involvedMovies("movie", movie.id, "recommendations")
+    let relatedList = []
+    for (const result of fetchRelated.results) {
+      relatedList.push(result)}
+
+      for (let i=0; i<5; i++){
+     renderInvolvedMovies(relatedList[i], relatedMovies)
+      }
 };
 //Bring the Popular Actors when you click on the actors button.
 actorsBtn.addEventListener("click", async () => {
@@ -216,36 +230,36 @@ const renderActor = async (actor) => {
             <ul id="moviesOfActor" class="list-unstyled"></ul>
     </div>`;
 
-    const actorMovies = await  involvedMovies(actor.id)
+    const actorMovies = await  involvedMovies(`person`,actor.id, `movie_credits`)
     let movieCount = 0
     while (movieCount < 4) {
-     renderInvolvedMovies(actorMovies[movieCount])
+     renderInvolvedMovies(actorMovies.cast[movieCount], moviesOfActor)
     movieCount++
     }
 };
 //Bring the related movies
-const involvedMovies = async (actorId) => {
-  const url = constructUrl(`person/${actorId}/movie_credits`, '');
+const involvedMovies = async (type,ID , path ) => {
+  const url = constructUrl(`${type}/${ID}/${path}`, '');
   const res = await fetch(url);
   const data = await res.json();
-  return data.cast;
+  return data;
 }
 
 //Shows the related movies of the actor.
-const renderInvolvedMovies =  (movieslist) => {
+const renderInvolvedMovies =  (movieslist, targetDiv) => {
  
     const movieDiv = document.createElement("li");
 
-    movieDiv.className = "actorMovieElement"
+    movieDiv.className = "MovieElement";
     movieDiv.innerHTML = `
-        <img style= "width:200px" src="${nullImg(PROFILE_BASE_URL + movieslist.poster_path)}" alt="${
-          movieslist.title
-    } poster">
+    <img style= "width:200px" src="${nullImg(PROFILE_BASE_URL + movieslist.poster_path)}" alt="${
+      movieslist.title
+} poster">
         <h3>${movieslist.title}</h3>`;
     movieDiv.addEventListener("click", () => {
       movieDetails(movieslist);
     });
-    moviesOfActor.appendChild(movieDiv);
+    targetDiv.appendChild(movieDiv);
 
 };
 
@@ -294,6 +308,15 @@ const renderGenres = (genres) => {
 
   const renderCast = async (movieID, targetDiv) => {
     const fetchlist = await fetchLists(`movie/${movieID}/credits`, '');
+
+    // Added the director name quickly becasue it is from the requirements.
+    const directorP = document.querySelector("#director");
+    for (let element of fetchlist.crew){
+      if (element.job === "Director") {
+        directorP.innerHTML = `<b>Director:</b> ${element.name}`
+      }
+    }
+    //The normal cast list
     const cast = fetchlist.cast;
     for (let i = 0; i<5; i++){
       const movieDiv = document.createElement("li");
