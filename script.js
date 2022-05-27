@@ -16,7 +16,8 @@ const filterBy = [
   {text: "Now Playing", url: `movie/now_playing`},
   {text: "Release Date", url: `discover/movie`},
 ]
-
+let genresId = [];
+let genresTitle = [];
 
  
 //mohamed new code
@@ -80,14 +81,20 @@ const fetchMovie = async (movieId) => {
 //It also connects the click event to the movieDetails function
 const renderMovies = (movies, deleteContent) => {
   if (deleteContent) CONTAINER.innerHTML=''
-  
+    let movieGenres = []
   movies.map((movie) => {
+    for(let i =0; i < movie.genre_ids.length; i++){
+      if (genresId.indexOf(movie.genre_ids[i]) !== -1){
+        movieGenres.push(genresTitle[genresId.indexOf(movie.genre_ids[i])])
+      }
+    }
+    
     const movieDiv = document.createElement("div");
     movieDiv.classList.add('col-md-4','col-sm-6');
     movieDiv.innerHTML = `
         <img class="col-12" src="${nullImg(BACKDROP_BASE_URL + movie.backdrop_path)}" alt="${
       movie.title
-    } poster">
+    } poster"><h6 class="text-center">${movieGenres[0]}${'\xa0'.repeat(50)}${movie.vote_average}</h6>
     
         <h3 class="text-center">${movie.title}</h3>
          `;
@@ -96,7 +103,8 @@ const renderMovies = (movies, deleteContent) => {
       movieDetails(movie);
     });
     CONTAINER.appendChild(movieDiv);
-
+    console.log(movieGenres.join('/'))
+    movieGenres = []
   });
 };
 
@@ -266,7 +274,9 @@ const renderInvolvedMovies =  (movieslist, targetDiv) => {
 //Create a list of genres and give it a functionality to bring the movies of the genre that you click on.
 const renderGenres = (genres) => {
   genres.genres.map((genre) => {
-    genresList.innerHTML +=`<li ><a class="dropdown-item genres" href="#" id=${genre.id}>${genre.name}</a></li>` })
+    genresList.innerHTML +=`<li ><a class="dropdown-item genres" href="#" id=${genre.id}>${genre.name}</a></li>`
+     genresId.push(genre.id);
+     genresTitle.push(genre.name);
   const genreButtons = document.querySelectorAll(".genres");
   genreButtons.forEach((button) => {
     button.addEventListener("click", async () => {
@@ -275,9 +285,11 @@ const renderGenres = (genres) => {
       const sortedMovies = await fetchLists(`discover/movie`, `&with_genres=${genreId}`);
       renderMovies(sortedMovies.results, true);
       })
-   }) ;
-  }
-
+   })
+   
+  })
+  console.log(genresId)
+}
 
   const createGenresList= async () => {
     const genres = await fetchLists(`genre/movie/list`, '');
