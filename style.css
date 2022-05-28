@@ -255,3 +255,7 @@ footer{
     height: 60px;
     background-color:rgb(3, 10, 10);
 }
+
+h1, h2 ,h3, h4{
+  font-family: 'Trebuchet MS', sans-serif;
+}

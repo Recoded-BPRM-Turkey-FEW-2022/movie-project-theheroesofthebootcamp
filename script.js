@@ -37,7 +37,7 @@ function aboutPage(){
   CONTAINER.innerHTML=''
   CONTAINER.innerHTML=` <div class='container custom-container' > 
   <h2> About OMG Movies</h2> 
-  <div> OMG movie is a search engine for movies. The website uses TMDB database as a source for the data
+  <div class="text-dark"> OMG movie is a search engine for movies. The website uses TMDB database as a source for the data
    and was implemented by two Re:Coded's students, Amjad Maqsouma & Mohamed Hadri.
   Further information about the students can be found down below in the footer Section.</div> 
   <div/> `
@@ -131,9 +131,9 @@ const renderMovie = async (movie) => {
              }>
         </div>
         <div class="col-md-8">
-        <ul id="header" class="list-unstyled d-flex  ">
-        <li class="d-block"><h3>${movie.title}   </h3></li>
-        <li class="d-block"><p>${movie.vote_average}</p></li>
+        
+        <span ><h3>${movie.title}${'\xa0'.repeat(3)}<span> <img style="width:30px;" id="star" src="https://www.freepnglogos.com/uploads/star-png/star-vector-png-transparent-image-pngpix-21.png"
+         <h3>${movie.vote_average}</h3></span>
 
         </ul>
         
