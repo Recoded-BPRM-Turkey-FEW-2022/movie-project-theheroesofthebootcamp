@@ -151,7 +151,7 @@ body{
    background-repeat: no-repeat;
   background-attachment: fixed;
     
-   background-image: url('/img/bg5.jpg');
+   background-image: url('./img/bg5.jpg');
 }
 
 
@@ -255,4 +255,3 @@ footer{
     height: 60px;
     background-color:rgb(3, 10, 10);
 }
-

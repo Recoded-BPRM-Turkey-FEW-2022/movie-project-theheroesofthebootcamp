@@ -28,7 +28,7 @@ searchInput.addEventListener("keyup",async (e)=>{
   CONTAINER.innerHTML = ``
   const list = await fetchLists(`search/multi`, `&query=${value}`)
     for (const result of list.results) {
-      result.media_type === 'movie' ? renderMovies([result], false) : result.media_type === 'movie'? renderActors([result], false) : null
+      result.media_type === 'movie' ? renderMovies([result], false) : result.media_type === 'person'? renderActors([result], false) : null
     }
 })
 
@@ -103,7 +103,7 @@ const renderMovies = (movies, deleteContent) => {
         <img class="col-12" src="${nullImg(BACKDROP_BASE_URL + movie.backdrop_path)}" alt="${
       movie.title
     } poster">
-    <div class=''><h6 class='blue_flag'>${movieGenres[0]}${'\xa0'.repeat(50)} </h6>
+    <div class=''><h6 class='blue_flag'>${handleNull(`${movieGenres[0]}${'\xa0'.repeat(50)}`)} </h6>
     
         <h3 >${movie.title}</h3>
         <h5  class='rating'>Rating: ${movie.vote_average}</h5>
@@ -113,7 +113,7 @@ const renderMovies = (movies, deleteContent) => {
       movieDetails(movie);
     });
     CONTAINER.appendChild(movieDiv);
-    console.log(movieGenres.join('/'))
+
     movieGenres = []
   });
 };
@@ -131,7 +131,12 @@ const renderMovie = async (movie) => {
              }>
         </div>
         <div class="col-md-8">
-            <h2 id="movie-title">${movie.title}&nbsp&nbsp&nbsp${movie.vote_average}</h2>
+        <ul id="header" class="list-unstyled d-flex  ">
+        <li class="d-block"><h3>${movie.title}   </h3></li>
+        <li class="d-block"><p>${movie.vote_average}</p></li>
+
+        </ul>
+        
             <p id="director"></p>
             <p><b>Language:</b> ${movie.original_language.toUpperCase()}</p>
             <p id="movie-release-date"><b>Release Date:</b> ${
@@ -281,11 +286,12 @@ const renderInvolvedMovies =  (movieslist, targetDiv) => {
     const movieDiv = document.createElement("li");
 
     movieDiv.className = "MovieElement movie-card";
+
     movieDiv.innerHTML = `
     <img style= "width:200px" src="${nullImg(PROFILE_BASE_URL + movieslist.poster_path)}" alt="${
       movieslist.title
 } poster">
-        <h3>${movieslist.title}</h3>`;
+        <h3 >${movieslist.title}</h3>`;
     movieDiv.addEventListener("click", () => {
       movieDetails(movieslist);
     });
@@ -311,7 +317,7 @@ const renderGenres = (genres) => {
    })
    
   })
-  console.log(genresId)
+
 }
 
   const createGenresList= async () => {
@@ -355,9 +361,9 @@ const renderGenres = (genres) => {
     const cast = fetchlist.cast;
     for (let i = 0; i<5; i++){
       const movieDiv = document.createElement("li");
-      movieDiv.classList.add("display-flex", "movie-card",'movie-card')  
+      movieDiv.classList.add("display-flex", "movie-card")  
      movieDiv.innerHTML = `
-         <img style= 'width:200px'src="${nullImg(PROFILE_BASE_URL+ cast[i].profile_path)}" class=" mx-auto d-block" alt="${
+         <img style= 'width:200px; 'src="${nullImg(PROFILE_BASE_URL+ cast[i].profile_path)}" class=" mx-auto d-block" alt="${
           cast[i].name
      } poster">
          <h3 class="text-center">${cast[i].name}</h3>`;
