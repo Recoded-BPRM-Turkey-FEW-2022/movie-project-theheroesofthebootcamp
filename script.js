@@ -398,23 +398,21 @@ const renderProductionCompanies = (arrOfComp, compsSection) => {
     const compDetails = await fetchLists(`company/${compId}`, '');
     CONTAINER.innerHTML = ``
     CONTAINER.innerHTML =`
-    <div class= "row movie-card" >
-        <div class="col-md-4">
-             <img id="comp-pic" style="width:300px" src=${
+    <div class= "d-flex movie-card justify-content-center align-items-center" >
+        <div class="col-md-4 m-1">
+             <img id="comp-pic" style="width:250px" src=${
               nullImg(COMP_BASE_URL + compDetails.logo_path) 
              }>
         </div>
         <div class="col-md-8">
             <h2 id="comp-name" >${compDetails.name}</h2>
-            <q id="comp-Info" > <b>Headquarters:</b> ${
+            <p id="comp-Info"> <b>Headquarters:</b> ${
               handleNull(compDetails.headquarters)
-            }<b></br>Website: ${handleNull(compDetails.homepage)
-            
-            }</b></br><b>Origin Country:</b> ${compDetails.origin_country}</br>
+            }<b></br>Website: ${handleNull(compDetails.homepage)}</p>
+              </b></br><b>Origin Country:</b> ${compDetails.origin_country}</br>
             <b>Home Page:</b> ${handleNull(compDetails.homepage)}</p>
             <h3>Description:</h3>
             <p id="comp-description">${handleNull(compDetails.description)}</p>
-        </div>
         </div>
     </div>`;
   }
