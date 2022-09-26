@@ -9,6 +9,9 @@
 .custom-search:hover{
   box-shadow: rgb(53, 135, 202) 1.95px 1.95px 2.6px;
 }
+h3{
+  font-size: 2rem;
+}
 
 #logo{
   width: 90px;
