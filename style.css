@@ -173,7 +173,7 @@ body{
   color: black;
  text-align: center;
     border-radius: 3%;
-    background-color: #fdfd96;
+    background-color: #e2e2e2;
     padding: 0.5%;
     margin: 1%;
     cursor: pointer;
@@ -182,11 +182,11 @@ body{
 }
 .movie-card:hover{
     transform: scale(1.1); 
-    box-shadow: rgb(209, 47, 60) 0px 5px 15px;
+    box-shadow: rgb(121, 0, 10) 0px 5px 15px;
 }
 .movie-card img {
    
-    background-color: rgb(85, 211, 233);
+    background-color: rgb(144, 238, 255);
     margin: 1%;
     padding: 1%;
     border-radius: 7%;
@@ -205,8 +205,8 @@ body{
   background-image: linear-gradient(
     40deg,
     #b2eeed 0%,
-    #e28ee4 45%,
-    #cfce6f 100%
+    #555355 45%,
+    #8f8e65 100%
   );
   
 }
@@ -239,7 +239,7 @@ body{
     padding-left: 3rem;
     color: #fff;
     background: #833ab4;
-    background: linear-gradient(90deg,#833ab4 0,#ac1919 50%,#fcb045 100%);
+    background: linear-gradient(90deg,#543ab4 0,#1965ac 50%,#fcb045 100%);
     clip-path: polygon(0 0,100% 0,90% 100%,0 100%);
 }
 
@@ -254,6 +254,7 @@ body{
 footer{
     height: 60px;
     background-color:rgb(3, 10, 10);
+    font-size: 24px;
 }
 
 h1, h2 ,h3, h4{
